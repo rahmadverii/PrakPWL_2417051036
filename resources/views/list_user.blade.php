@@ -1,36 +1,53 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Daftar Pengguna</h2>
-        <a href="{{ route('user.create') }}" class="btn btn-success">+ Tambah User</a>
+        <h2>Daftar User</h2>
+        <a href="{{ route('user.create') }}" class="btn btn-success">+ Tambah User Baru</a>
     </div>
 
-    <div class="card shadow-sm border-0">
+    {{-- Alert Notifikasi Sukses --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Berhasil!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <div class="card shadow-sm">
         <div class="card-body p-0">
-            <table class="table table-striped table-hover mb-0">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th class="px-3">ID</th>
+                        <th>ID</th>
                         <th>Nama</th>
                         <th>NPM</th>
                         <th>Kelas</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($users as $user)
+                    @foreach ($users as $user)
                     <tr>
-                        <td class="px-3">{{ $user->id }}</td>
+                        <td>{{ $user->id }}</td>
                         <td>{{ $user->nama }}</td>
                         <td>{{ $user->nim }}</td>
-                        <td><span class="badge bg-info text-dark">{{ $user->nama_kelas }}</span></td>
+                        <td>{{ $user->kelas->nama_kelas ?? '-' }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-warning me-1">
+                                ✏️ Edit
+                            </a>
+                            <form action="{{ route('user.destroy', $user->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus user ini?')">
+                                    🗑️ Hapus
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="text-center py-3">Belum ada data pengguna.</td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
